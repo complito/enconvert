@@ -1,4 +1,10 @@
-@echo off
+:: Обрабатываем команду /?
+if '%1'=='/?' (
+	echo Converts the encoding of all files of the form *.txt from CP866 to UTF-8 in the specified directory
+	echo encovert.cmd DIRECTORY_NAME
+	exit /b
+)
+
 :: Проверяем число аргументов
 set argNumber=0
 for %%x in (%*) do set /a argNumber+=1
@@ -13,12 +19,6 @@ if %argNumber%==0 (
 	exit /b
 )
 
-:: Обрабатываем команду /?
-if %argNumber%==1 if %1=="/?" (
-	echo Help
-	exit /b
-)
-
 :: Проверяем существование переданной директории
 if not exist %1 (
 	echo The specified folder doesn't exist
@@ -28,7 +28,7 @@ if not exist %1 (
 :: Меняем кодировку  файлов вида *.txt в указанной директории
 for /r %1 %%f in (*.txt) do (
 	if exist "%%f-utf8.txt" (
-		echo The temporary file needed to create %%f already exists. Rename it to a different name
+		echo The temporary file needed to create %%f already exists. The encoding of this file has not been converted.
 		exit /b
 	) else (
 		GnuWin32\bin\iconv.exe -c -f cp866 -t utf-8 "%%f" > "%%f-utf8.txt"
@@ -37,5 +37,5 @@ for /r %1 %%f in (*.txt) do (
 		rename "%%f-utf8" "*.txt"
 	)
 )
-echo File encoding successfully translated from CP866 to UTF-8
+echo File encoding successfully converted from CP866 to UTF-8
 exit /b
