@@ -1,3 +1,5 @@
+@echo off
+
 :: Обрабатываем команду /?
 if '%1'=='/?' (
 	echo Converts the encoding of all files of the form *.txt from CP866 to UTF-8 in the specified directory
