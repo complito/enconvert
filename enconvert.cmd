@@ -1,4 +1,5 @@
-@echo off
+::@echo off
+setlocal EnableDelayedExpansion
 
 :: Обрабатываем команду /?
 if '%1'=='/?' (
@@ -7,16 +8,8 @@ if '%1'=='/?' (
 	exit /b
 )
 
-:: Проверяем число аргументов
-set argNumber=0
-for %%x in (%*) do set /a argNumber+=1
-if %argNumber% GTR 1 (
-	echo The number of arguments must not be more than 1
-	exit /b
-)
-
 :: Сообщение, как получить справку
-if %argNumber%==0 (
+if '%1'=='' (
 	echo Enter /? for help
 	exit /b
 )
@@ -26,17 +19,17 @@ if not exist %1 (
 	echo The specified folder doesn't exist
 	exit /b
 )
-
 :: Меняем кодировку  файлов вида *.txt в указанной директории
 for /r %1 %%f in (*.txt) do (
-	if exist "%%f-utf8.txt" (
-		echo The temporary file needed to create %%f already exists. The encoding of this file has not been converted.
-		exit /b
+	:resetRand
+	set rand=!RANDOM!
+	if exist "%%f-!rand!.txt" (
+		goto resetRand
 	) else (
-		GnuWin32\bin\iconv.exe -c -f cp866 -t utf-8 "%%f" > "%%f-utf8.txt"
+		GnuWin32\bin\iconv.exe -c -f cp866 -t utf-8 "%%f" > "%%f-!rand!.txt"
 		del "%%f"
-		rename "%%f-utf8.txt" "*."
-		rename "%%f-utf8" "*.txt"
+		rename "%%f-!rand!.txt" "*."
+		rename "%%f-!rand!" "*.txt"
 	)
 )
 echo File encoding successfully converted from CP866 to UTF-8
